@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import waegg from './waegg.png';
 import './App.css';
 import Question from './Question';
+import Intro from './Intro';
 import Service from './Service';
 import firebase from './firebase';
 const uuidv1 = require('uuid/v1');
 const Cookies = require('cookies-js');
+const Timestamp = require('react-timestamp');
 
 class App extends Component {
     currentUuid;
@@ -16,7 +18,17 @@ class App extends Component {
 
     constructor() {
         super();
+
+        this.asd = this.asd.bind(this);
+
+        this.state = {
+            playerCreated: 0,
+            next: false,
+            logoClasses: 'App-logo'
+        };
+
         this.currentUuid = Cookies.get(Service.constCookieUuid);
+
         if (!this.currentUuid) {
             this.currentUuid = uuidv1();
             Service.setUuid(this.currentUuid);
@@ -29,41 +41,35 @@ class App extends Component {
             this.firebasePlayersDb.child(this.currentUuid).on('value', val => {
                 console.log(444, val.val());
                 this.firebasePlayerData = val.val();
+                // this.state.playerCreated = this.firebasePlayerData.created;
+                this.setState({
+                    playerCreated: this.firebasePlayerData.created / 1000,
+                    playerName: this.firebasePlayerData.name || ''
+                });
             });
-            // this.firebaseDb.on('value', snapshot => {
-            //     console.log(4343, snapshot);
-            //     console.log(4343, snapshot.val());
-            // });
         }
-    }
-
-    getCreated() {
-        if (this.firebasePlayerData && this.firebasePlayerData.created) {
-            return this.firebasePlayerData.created;
-        }
-        return 0;
     }
 
     componentWillUpdate(prevProps, prevState) {
-        console.log(43244, this.firebasePlayerData);
+        console.log(43244, this.state);
     }
 
     render() {
         return (
-            <div className="App">
-                <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h1 className="App-title">Välkommen, UUID {this.currentUuid}</h1>
-                    <h4 >Du skapades: {this.getCreated()}</h4>
+            <div>
+                <header className="jumbotron text-center">
+                    <img src={waegg} className={this.state.logoClasses} alt="logo" />
+                    <h2>
+                        Välkommen, {this.state.playerName || 'UUID ' + this.currentUuid}
+                    </h2>
+                    <h4 >Du skapades: <Timestamp time={this.state.playerCreated}/></h4>
                 </header>
-                <p className="App-intro">
-                    To get started, edit <code>src/App.js</code> and save to reload.
-                </p>
                 <div className="container">
-                    <Question/>
-                </div>
-                <div>
-                    <button onClick={this.createQuestions}>Create questions</button>
+                    <Intro clickAction={this.asd}/>
+                    {/*<Question/>*/}
+                    <div className="mt-5">
+                        <button onClick={this.createQuestions}>Create questions</button>
+                    </div>
                 </div>
             </div>
         );
@@ -81,10 +87,11 @@ class App extends Component {
         firebaseQuestionsDb.child('lala').set({foo: 1, bar: 2});
     }
 
-    static getQuestion(id) {
-        return {
-            id
-        }
+    asd(par) {
+        console.log(555554444, par);
+        this.setState({
+            logoClasses: `${this.state.logoClasses} App-logo-animation`
+        })
     }
 }
 
