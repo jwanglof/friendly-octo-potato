@@ -1,31 +1,39 @@
 import React, { Component } from 'react';
-import waegg from './waegg.png';
+import { Switch, Route } from 'react-router-dom';
 import './App.css';
 import Question from './Question';
 import Intro from './Intro';
 import Service from './Service';
 import firebase from './firebase';
+import Header from "./Header";
+import AddQuestion from "./AddQuestion";
+import AllQuestions from "./AllQuestions";
+import Finished from "./Finished";
 const uuidv1 = require('uuid/v1');
 const Cookies = require('cookies-js');
-const Timestamp = require('react-timestamp');
 
 class App extends Component {
     currentUuid;
-    firebaseDb = firebase.database().ref('test');
     firebasePlayersDb = firebase.database().ref('players');
     firebaseQuestionsDb = firebase.database().ref('questions');
     firebasePlayerData;
+    maximumQuestions = 15;
 
-    constructor() {
-        super();
-
-        this.asd = this.asd.bind(this);
+    constructor(props) {
+        super(props);
 
         this.state = {
             playerCreated: 0,
             next: false,
             logoClasses: 'App-logo'
         };
+
+        setTimeout(() => {
+            console.log(5666666);
+            this.setState({
+                logoClasses: 'App-logo App-logo-animation'
+            });
+        }, 1500);
 
         this.currentUuid = Cookies.get(Service.constCookieUuid);
 
@@ -38,8 +46,7 @@ class App extends Component {
             });
         } else {
             Service.setUuid(this.currentUuid);
-            this.firebasePlayersDb.child(this.currentUuid).on('value', val => {
-                console.log(444, val.val());
+            this.firebasePlayersDb.child(this.currentUuid).once('value', val => {
                 this.firebasePlayerData = val.val();
                 // this.state.playerCreated = this.firebasePlayerData.created;
                 this.setState({
@@ -50,48 +57,76 @@ class App extends Component {
         }
     }
 
-    componentWillUpdate(prevProps, prevState) {
-        console.log(43244, this.state);
+    componentDidUpdate() {
+        // window.scrollTo(0, 0);
+    }
+
+    componentWillMount() {
+        this.fetchQuestions();
     }
 
     render() {
         return (
             <div>
-                <header className="jumbotron text-center">
-                    <img src={waegg} className={this.state.logoClasses} alt="logo" />
-                    <h2>
-                        Välkommen, {this.state.playerName || 'UUID ' + this.currentUuid}
-                    </h2>
-                    <h4 >Du skapades: <Timestamp time={this.state.playerCreated}/></h4>
-                </header>
+                <Header {...this.state} />
                 <div className="container">
-                    <Intro clickAction={this.asd}/>
-                    {/*<Question/>*/}
-                    <div className="mt-5">
-                        <button onClick={this.createQuestions}>Create questions</button>
-                    </div>
+                    <Switch>
+                        <Route exact path='/' component={Intro}/>
+                        <Route exact path='/add-question' component={AddQuestion}/>
+                        <Route exact path='/all-questions' component={AllQuestions}/>
+                        <Route exact path='/finished' component={Finished}/>
+                        <Route path='/question/:questionId' component={Question}/>
+                    </Switch>
                 </div>
             </div>
         );
     }
 
-    createQuestions() {
-        console.log(3333);
-        const firebaseQuestionsDb = firebase.database().ref('players');
-        // for (let i = 0, len = 10; i < len; i++) {
-        //     const q = this.getQuestion(i);
-        //     q.category = '';
-        //     q.question = '';
-        //     // firebaseQuestionsDb.push(q);
-        // }
-        firebaseQuestionsDb.child('lala').set({foo: 1, bar: 2});
+    fetchQuestions() {
+        console.log("FETCH!");
+        const chosenQuestionKeys = [];
+        const chosenQuestions = {};
+        this.firebaseQuestionsDb.once('value', snapshot => {
+            const data = snapshot.val();
+            const keys = Object.keys(data);
+            const levelZero = [];
+            const levelOne = [];
+            const levelTwo = [];
+            for (let i = 0, len = this.maximumQuestions; i < len; i++) {
+                const randomKey = App.getRandomKey(keys);
+                if (chosenQuestionKeys.indexOf(randomKey) === -1) {
+                    switch (data[randomKey].level) {
+                        case 0:
+                            levelZero.push(randomKey);
+                            break;
+                        case 1:
+                            levelOne.push(randomKey);
+                            break;
+                        case 2:
+                            levelTwo.push(randomKey);
+                            break;
+                        default:
+                            console.log(`${randomKey} doesn't have a level :(`);
+                    }
+                    // chosenQuestionKeys.push(randomKey);
+                    chosenQuestions[randomKey] = data[randomKey];
+                } else {
+                    // If we already have the question we need to make the length longer so we can fetch a new question!
+                    // len++;
+                    console.log('Should make the length longer!');
+                }
+            }
+
+            Service.questions = {
+                // keys: chosenQuestionKeys,
+                keys: levelZero.concat(levelOne, levelTwo),
+                questions: chosenQuestions
+            };
+        });
     }
 
-    asd(par) {
-        console.log(555554444, par);
-        this.setState({
-            logoClasses: `${this.state.logoClasses} App-logo-animation`
-        })
+    static getRandomKey(array) {
+        return array[Math.floor(Math.random() * array.length)];
     }
 }
 

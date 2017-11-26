@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import Service from './Service';
 
 class Intro extends Component {
-    constructor() {
-        super();
-        this.handleNext = this.handleNext.bind(this);
+    constructor(props) {
+        super(props);
+        this.gotoQuestion = this.gotoQuestion.bind(this);
     }
 
     render() {
@@ -34,16 +35,23 @@ class Intro extends Component {
                         <br/>
                         Efter sista frågan kommer du komma till ett formulär där du kan skriva in ditt namn (om du vill!). Kommer finna ett leader-board där du kan se hur bra du ligger till :)
                     </span>
+                    <h3>PS. Jag har sparat en cookie som spar ditt UID. Om du inte är OK med det så måste du tyvärr stänga ner denna eminenta hemsida!</h3>
                 </div>
                 <div className="col-12 text-center">
-                    <button className="btn btn-dark" onClick={this.handleNext}>Stäng och gå till spelet</button>
+                    <button className="btn btn-dark" onClick={this.gotoQuestion}>Fortsätt till frågorna!</button>
                 </div>
             </div>
         );
     }
 
-    handleNext() {
-        this.props.clickAction('Lulz');
+    gotoQuestion() {
+        if (Service.questions && Service.questions.keys) {
+            this.props.history.push(`/question/${Service.questions.keys[0]}`);
+        } else {
+            setTimeout(() => {
+                this.gotoQuestion();
+            }, 500);
+        }
     }
 }
 

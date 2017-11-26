@@ -1,4 +1,5 @@
 let currentUuid;
+let questions;
 const constCookieUuid = 'alumni-game-cookie';
 
 function setUuid(uuid) {
@@ -15,5 +16,6 @@ function getUuid() {
 module.exports = {
     constCookieUuid,
     setUuid,
-    getUuid
+    getUuid,
+    questions
 };

@@ -6,6 +6,11 @@
     height: 180px;
 }
 
+.App-logo-small {
+    height: 25px;
+    animation: App-logo-small-spin infinite 1s linear;
+}
+
 .App-logo-animation {
     animation: App-logo-spin infinite 10s linear;
 }
@@ -21,14 +26,30 @@
     font-size: 1.5em;
 }
 
+.text-danger {
+    color: red;
+}
+
+.text-warning {
+    color: green;
+}
+
 @keyframes App-logo-spin {
     0% { transform: rotate(0deg) }
     10% { transform: rotate(90deg) }
     20% { transform: rotate(180deg) }
     30% { transform: rotate(270deg) }
     40% { transform: rotate(360deg) }
-    100% { transform: scale(2, 2) }
+    70% { transform: scale(2, 2) }
+    /*80% { transform: rotate(180deg) }*/
+    /*90% { transform: rotate(90deg) }*/
+    100% { transform: rotate(0deg) }
 
     /*from { transform: rotate(0deg); }*/
     /*to { transform: rotate(360deg); }*/
+}
+
+@keyframes App-logo-small-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
