@@ -17,5 +17,6 @@ module.exports = {
     constCookieUuid,
     setUuid,
     getUuid,
-    questions
+    questions,
+    allQuestions: {}
 };

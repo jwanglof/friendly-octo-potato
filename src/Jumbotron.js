@@ -5,9 +5,8 @@ import waegg from './waegg.png';
 const Timestamp = require('react-timestamp');
 
 class Jumbotron extends Component {
+
     render() {
-        console.log(123321, this.props);
-        // TODO Add class to the logo when the intro is 'hidden'!
         return (
             <div className='jumbotron text-center'>
                 <img src={waegg} className={this.props.logoClasses} alt="logo" />

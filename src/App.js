@@ -4,11 +4,13 @@ import './App.css';
 import Question from './Question';
 import Intro from './Intro';
 import Service from './Service';
+import Events from './Events';
 import firebase from './firebase';
 import Header from "./Header";
 import AddQuestion from "./AddQuestion";
 import AllQuestions from "./AllQuestions";
 import Finished from "./Finished";
+import Leaderboard from "./Leaderboard";
 const uuidv1 = require('uuid/v1');
 const Cookies = require('cookies-js');
 
@@ -17,7 +19,7 @@ class App extends Component {
     firebasePlayersDb = firebase.database().ref('players');
     firebaseQuestionsDb = firebase.database().ref('questions');
     firebasePlayerData;
-    maximumQuestions = 15;
+    maximumQuestions = 2;
 
     constructor(props) {
         super(props);
@@ -27,13 +29,6 @@ class App extends Component {
             next: false,
             logoClasses: 'App-logo'
         };
-
-        setTimeout(() => {
-            console.log(5666666);
-            this.setState({
-                logoClasses: 'App-logo App-logo-animation'
-            });
-        }, 1500);
 
         this.currentUuid = Cookies.get(Service.constCookieUuid);
 
@@ -55,6 +50,14 @@ class App extends Component {
                 });
             });
         }
+
+
+        Events.emitter.addListener(Events.constants.introHidden, () => {
+            console.log(5666666);
+            this.setState({
+                logoClasses: 'App-logo App-logo-animation'
+            });
+        });
     }
 
     componentDidUpdate() {
@@ -75,6 +78,7 @@ class App extends Component {
                         <Route exact path='/add-question' component={AddQuestion}/>
                         <Route exact path='/all-questions' component={AllQuestions}/>
                         <Route exact path='/finished' component={Finished}/>
+                        <Route exact path='/leaderboard' component={Leaderboard}/>
                         <Route path='/question/:questionId' component={Question}/>
                     </Switch>
                 </div>
@@ -88,12 +92,18 @@ class App extends Component {
         const chosenQuestions = {};
         this.firebaseQuestionsDb.once('value', snapshot => {
             const data = snapshot.val();
+            Service.allQuestions = data;
+
+            Events.emitter.emit(Events.constants.allQuestionsFetched, data);
+
             const keys = Object.keys(data);
+            console.log('Keys:', keys);
             const levelZero = [];
             const levelOne = [];
             const levelTwo = [];
             for (let i = 0, len = this.maximumQuestions; i < len; i++) {
                 const randomKey = App.getRandomKey(keys);
+                console.log("Rand key:", randomKey);
                 if (chosenQuestionKeys.indexOf(randomKey) === -1) {
                     switch (data[randomKey].level) {
                         case 0:
@@ -108,14 +118,17 @@ class App extends Component {
                         default:
                             console.log(`${randomKey} doesn't have a level :(`);
                     }
-                    // chosenQuestionKeys.push(randomKey);
+                    // Add all keys to a temp-array so we can search it
+                    chosenQuestionKeys.push(randomKey);
                     chosenQuestions[randomKey] = data[randomKey];
                 } else {
                     // If we already have the question we need to make the length longer so we can fetch a new question!
-                    // len++;
+                    len++;
                     console.log('Should make the length longer!');
                 }
             }
+
+            console.log(levelZero, levelOne, levelTwo);
 
             Service.questions = {
                 // keys: chosenQuestionKeys,

@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import Service from './Service';
+import Events from './Events';
 
 class Intro extends Component {
     constructor(props) {
         super(props);
         this.gotoQuestion = this.gotoQuestion.bind(this);
+    }
+
+    componentWillUnmount() {
+        Events.emitter.emit(Events.constants.introHidden);
     }
 
     render() {

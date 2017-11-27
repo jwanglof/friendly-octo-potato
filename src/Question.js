@@ -8,6 +8,7 @@ import {Redirect} from "react-router-dom";
 class Question extends Component {
     firebaseAnswersDb = firebase.database().ref('answers');
     firebasePlayersDb = firebase.database().ref('players');
+    firebaseQuestionsDb = firebase.database().ref('questions');
     userAnswers;
     originalGameTime;
     timerClass = '';
@@ -65,7 +66,7 @@ class Question extends Component {
             return (
                 <div className="row">
                     <div className="col-12 text-left">
-                        <h5>Tid kvar: <span className={this.timerClass}>{this.state.gameTimerSeconds}</span></h5>
+                        <h5>Sekunder kvar: <span className={this.timerClass}>{this.state.gameTimerSeconds}</span></h5>
                         <h3>Fråga: {this.state.question.question} (#Frågenummer)</h3>
                         <h5>Kategori: {this.state.question.category}</h5>
                         <div className="form-check">
@@ -89,7 +90,7 @@ class Question extends Component {
                                 {this.state.answers.two || <img src={waegg} className="App-logo-small" alt="logo"/>}
                             </label>
                         </div>
-                        <button type="submit" className="btn btn-primary" onClick={this.submitAnswer}
+                        <button type="submit" className="btn btn-primary" onClick={() => this.submitAnswer()}
                                 disabled={this.state.submitButtonInactive}>Nästa fråga!
                         </button>
                     </div>
@@ -150,38 +151,57 @@ class Question extends Component {
         const target = event.target;
         const value = target.value;
 
+        console.log(1111, value);
+
         this.setState({
             chosenAnswer: value,
             submitButtonInactive: false
         });
     }
 
-    submitAnswer() {
+    submitAnswer(overrideAnswer) {
         const playerRef = this.firebasePlayersDb.child(`${Service.getUuid()}`);
+        const questionRef = this.firebaseQuestionsDb.child(this.props.match.params.questionId);
 
-        this.userAnswers.push({
-            questionId: this.props.match.params.questionId,
-            chosenAnswer: this.state.chosenAnswer
-        });
+        questionRef.once('value', snapshot => {
+            console.log(555, snapshot.val());
+            const data = snapshot.val();
+            let numberOfShows = data.numberOfShows + 1;
+            let numberOfAnswers = data.numberOfAnswers;
 
-        playerRef.update({
-            answers: this.userAnswers
-        }).then(error => {
-            if (!error) {
-                console.log('go to next question!');
-                const thisKeyIndex = Service.questions.keys.indexOf(this.props.match.params.questionId);
-                const nextKey = Service.questions.keys[thisKeyIndex + 1];
-                console.log(Service.questions.keys, thisKeyIndex);
-                if (nextKey) {
-                    console.log('Next!', nextKey);
-                    this.setState({
-                        redirect: nextKey
-                    });
-                } else {
-                    console.log('User done!');
-                    this.props.history.push(`/finished`);
-                }
+            if (!overrideAnswer) {
+                numberOfAnswers++;
             }
+
+            questionRef.update({
+                numberOfShows,
+                numberOfAnswers
+            }).then(error => {
+                if (!error) {
+                    this.userAnswers.push({
+                        questionId: this.props.match.params.questionId,
+                        chosenAnswer: overrideAnswer || this.state.chosenAnswer
+                    });
+
+                    return playerRef.update({answers: this.userAnswers});
+                }
+            }).then(error => {
+                if (!error) {
+                    console.log('go to next question!');
+                    const thisKeyIndex = Service.questions.keys.indexOf(this.props.match.params.questionId);
+                    const nextKey = Service.questions.keys[thisKeyIndex + 1];
+                    console.log(Service.questions.keys, thisKeyIndex, nextKey);
+                    if (nextKey) {
+                        console.log('Next!', nextKey);
+                        this.setState({
+                            redirect: nextKey
+                        });
+                    } else {
+                        console.log('User done!');
+                        this.props.history.push(`/finished`);
+                    }
+                }
+            });
         });
     }
 
@@ -218,6 +238,7 @@ class Question extends Component {
 
             if (newTimerSeconds === 0) {
                 console.log('Abort! Next question!');
+                this.submitAnswer('timeout');
             } else {
                 this.runGameTimer();
             }
