@@ -106,7 +106,10 @@ class AddQuestion extends Component {
         event.preventDefault();
         const question = {
             question: this.state.question,
-            category: this.state.category
+            category: this.state.category,
+            level: this.state.level,
+            numberOfAnswers: 0,
+            numberOfShows: 0
         };
         const newQuestionRef = this.firebaseQuestionsDb.push(question, error => {
             if (!error) {
@@ -115,8 +118,7 @@ class AddQuestion extends Component {
                     answerOne: this.state.answerOne,
                     answerCross: this.state.answerCross,
                     answerTwo: this.state.answerTwo,
-                    correctAnswer: this.state.answerSelected,
-                    numberOfShows: 0
+                    correctAnswer: this.state.answerSelected.substring(0, this.state.answerSelected.length - 7)
                 };
                 this.firebaseAnswersDb.child(newQuestionRef.key).set(answers, error => {
                     if (!error) {

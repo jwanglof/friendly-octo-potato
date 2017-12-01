@@ -13,6 +13,7 @@ import Finished from "./Finished";
 import Leaderboard from "./Leaderboard";
 const uuidv1 = require('uuid/v1');
 const Cookies = require('cookies-js');
+const random_name = require('node-random-name');
 
 class App extends Component {
     currentUuid;
@@ -36,8 +37,19 @@ class App extends Component {
             this.currentUuid = uuidv1();
             Service.setUuid(this.currentUuid);
             Cookies.set(Service.constCookieUuid, this.currentUuid);
+            const created = Date.now();
+            const name = random_name();
             this.firebasePlayersDb.child(this.currentUuid).set({
-                created: Date.now()
+                created,
+                name
+            }).then(error => {
+                if (!error) {
+                    this.setState({
+                        playerCreated: created,
+                        playerName: name
+                    });
+                    Events.emitter.emit(Events.constants.nameChanged, name);
+                }
             });
         } else {
             Service.setUuid(this.currentUuid);
@@ -48,12 +60,12 @@ class App extends Component {
                     playerCreated: this.firebasePlayerData.created / 1000,
                     playerName: this.firebasePlayerData.name || ''
                 });
+                Events.emitter.emit(Events.constants.nameChanged, this.firebasePlayerData.name || 'Lozl');
             });
         }
 
 
         Events.emitter.addListener(Events.constants.introHidden, () => {
-            console.log(5666666);
             this.setState({
                 logoClasses: 'App-logo App-logo-animation'
             });
