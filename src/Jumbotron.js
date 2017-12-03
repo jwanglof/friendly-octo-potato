@@ -14,7 +14,6 @@ class Jumbotron extends Component {
 
     componentDidMount() {
         Events.emitter.addListener(Events.constants.nameChanged, (newName) => {
-            console.log('loooool', newName);
             this.setState({
                 name: newName
             });
@@ -32,15 +31,6 @@ class Jumbotron extends Component {
             </div>
         );
     }
-
-    // renderName() {
-    //     if (this.state.playerName) {
-    //         return this.state.playerName;
-    //     } else if (this.currentUuid) {
-    //         return `UUID ${this.currentUuid}`;
-    //     }
-    //     return 'Smith'
-    // }
 }
 
 export default Jumbotron;

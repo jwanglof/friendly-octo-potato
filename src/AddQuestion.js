@@ -112,7 +112,7 @@ class AddQuestion extends Component {
         const question = {
             question: this.state.question,
             category: this.state.category,
-            level: this.state.level,
+            level: parseInt(this.state.level, 10),
             numberOfAnswers: 0,
             numberOfShows: 0
         };

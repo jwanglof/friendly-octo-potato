@@ -20,7 +20,7 @@ class App extends Component {
     firebasePlayersDb = firebase.database().ref('players');
     firebaseQuestionsDb = firebase.database().ref('questions');
     firebasePlayerData;
-    maximumQuestions = 2;
+    maximumQuestions = 6;
 
     constructor(props) {
         super(props);
@@ -51,17 +51,27 @@ class App extends Component {
                     Events.emitter.emit(Events.constants.nameChanged, name);
                 }
             });
+
+            this.fetchQuestions();
         } else {
             Service.setUuid(this.currentUuid);
             this.firebasePlayersDb.child(this.currentUuid).once('value', val => {
                 this.firebasePlayerData = val.val();
-                // this.state.playerCreated = this.firebasePlayerData.created;
                 if (this.firebasePlayerData) {
                     this.setState({
                         playerCreated: this.firebasePlayerData.created,
                         playerName: this.firebasePlayerData.name || ''
                     });
+
                     Events.emitter.emit(Events.constants.nameChanged, this.firebasePlayerData.name || 'Lozl');
+
+                    if (!this.firebasePlayerData.answers || (this.firebasePlayerData.answers && this.firebasePlayerData.answers.length === 0)) {
+                        this.fetchQuestions();
+                    } else {
+                        Events.emitter.emit(Events.constants.noQuestionsFetched);
+                    }
+                } else {
+                    this.fetchQuestions();
                 }
             });
         }
@@ -72,14 +82,6 @@ class App extends Component {
                 logoClasses: 'App-logo App-logo-animation'
             });
         });
-    }
-
-    componentDidUpdate() {
-        // window.scrollTo(0, 0);
-    }
-
-    componentWillMount() {
-        this.fetchQuestions();
     }
 
     render() {
@@ -101,7 +103,6 @@ class App extends Component {
     }
 
     fetchQuestions() {
-        console.log("FETCH!");
         const chosenQuestionKeys = [];
         const chosenQuestions = {};
         this.firebaseQuestionsDb.once('value', snapshot => {
@@ -111,15 +112,13 @@ class App extends Component {
             Events.emitter.emit(Events.constants.allQuestionsFetched, data);
 
             const keys = Object.keys(data);
-            console.log('Keys:', keys);
             const levelZero = [];
             const levelOne = [];
             const levelTwo = [];
             for (let i = 0, len = this.maximumQuestions; i < len; i++) {
                 const randomKey = App.getRandomKey(keys);
-                console.log("Rand key:", randomKey);
                 if (chosenQuestionKeys.indexOf(randomKey) === -1) {
-                    switch (data[randomKey].level) {
+                    switch (parseInt(data[randomKey].level, 10)) {
                         case 0:
                             levelZero.push(randomKey);
                             break;
@@ -138,15 +137,11 @@ class App extends Component {
                 } else {
                     // If we already have the question we need to make the length longer so we can fetch a new question!
                     len++;
-                    console.log('Should make the length longer!');
                 }
             }
 
-            console.log(levelZero, levelOne, levelTwo);
-
             Service.questions = {
-                // keys: chosenQuestionKeys,
-                keys: levelZero.concat(levelOne, levelTwo),
+                keys: [...levelZero, ...levelOne, ...levelTwo],
                 questions: chosenQuestions
             };
         });

@@ -12,6 +12,7 @@ class Question extends Component {
     userAnswers;
     originalGameTime;
     timerClass = '';
+    intervalId;
 
     constructor(props) {
         super(props);
@@ -34,14 +35,13 @@ class Question extends Component {
     }
 
     componentDidMount() {
-        console.log('DID MOUNT!');
         this.setQuestion();
 
         this.userAnswers = [];
         const playerRef = this.firebasePlayersDb.child(`${Service.getUuid()}`);
         playerRef.once('value', snapshot => {
             const data = snapshot.val();
-            if (data.answers) {
+            if (data && data.answers) {
                 this.userAnswers = data.answers;
             }
         });
@@ -52,7 +52,6 @@ class Question extends Component {
     componentDidUpdate(prevProps, prevState) {
         // TODO Ugly imo, and pretty unreadable!
         if (prevState.redirect && !this.state.redirect) {
-            console.log('NEW QUESTION!');
             this.setQuestion();
         }
     }
@@ -117,7 +116,6 @@ class Question extends Component {
                     });
                     return this.runGameTimer();
                 });
-            // TODO Fix the 'numberOfShows' in the DB
         } else {
             // Ugly, must wait for the questions to arrive. This should be handled by some kind of event
             setTimeout(() => {
@@ -127,7 +125,6 @@ class Question extends Component {
     }
 
     getAnswers() {
-        console.log(this.props.match.params);
         // TODO Do not get the correct answer!
         return new Promise(resolve => {
             this.firebaseAnswersDb.child(this.props.match.params.questionId).once('value', snapshot => {
@@ -153,8 +150,6 @@ class Question extends Component {
         const target = event.target;
         const value = target.value;
 
-        console.log(1111, value);
-
         this.setState({
             chosenAnswer: value,
             submitButtonInactive: false
@@ -162,12 +157,13 @@ class Question extends Component {
     }
 
     submitAnswer(overrideAnswer) {
+        clearInterval(this.intervalId);
+
         const playerRef = this.firebasePlayersDb.child(`${Service.getUuid()}`);
         const questionRef = this.firebaseQuestionsDb.child(this.props.match.params.questionId);
         const answerOnSecond = this.state.gameTimerSeconds;
 
         questionRef.once('value', snapshot => {
-            console.log(555, snapshot.val());
             const data = snapshot.val();
             let numberOfShows = data.numberOfShows + 1;
             let numberOfAnswers = data.numberOfAnswers;
@@ -234,12 +230,12 @@ class Question extends Component {
     }
     
     runGameTimer() {
-        const intervalId = setInterval(() => {
+        this.intervalId = setInterval(() => {
             const newTimerSeconds = this.state.gameTimerSeconds - 1;
             this.setState({
                 gameTimerSeconds: newTimerSeconds
             });
-            clearInterval(intervalId);
+            clearInterval(this.intervalId);
 
             if ((newTimerSeconds / this.originalGameTime) <= 0.3) {
                 this.timerClass = 'text-danger';

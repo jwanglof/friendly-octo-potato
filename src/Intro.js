@@ -5,7 +5,26 @@ import Events from './Events';
 class Intro extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            showButton: false,
+            showNewGameText: false
+        };
+
         this.gotoQuestion = this.gotoQuestion.bind(this);
+
+        Events.emitter.addListener(Events.constants.noQuestionsFetched, () => {
+            this.setState({
+                showNewGameText: true
+            });
+        });
+
+        Events.emitter.addListener(Events.constants.allQuestionsFetched, () => {
+            console.log(444);
+            this.setState({
+                showButton: true
+            });
+        });
     }
 
     componentWillUnmount() {
@@ -41,22 +60,28 @@ class Intro extends Component {
                         Efter sista frågan kommer du komma till ett formulär där du kan skriva in ditt namn (om du vill!). Kommer finna ett leader-board där du kan se hur bra du ligger till :)
                     </span>
                     <h3>PS. Jag har sparat en cookie som spar ditt UID. Om du inte är OK med det så måste du tyvärr stänga ner denna eminenta hemsida!</h3>
+                    <h5>PPS. Jag kan inte garantera att detta spel fungerar helt 100%, såååå, lycka till ;D</h5>
                 </div>
                 <div className="col-12 text-center">
-                    <button className="btn btn-dark" onClick={this.gotoQuestion}>Fortsätt till frågorna!</button>
+                    <button className="btn btn-dark" onClick={this.gotoQuestion} hidden={!this.state.showButton}>Fortsätt till frågorna!</button>
+                </div>
+                <div className="col-12 text-center" hidden={!this.state.showNewGameText}>
+                    <h3>Det ser ut som att du redan har spelat, kul!</h3>
+                    Om du vill spela en gång till kan du bara ta bort kakan som heter "alumni-game-cookie" och ladda om sidan :)
                 </div>
             </div>
         );
     }
 
     gotoQuestion() {
-        if (Service.questions && Service.questions.keys) {
+        // console.log(123, Service.questions);
+        // if (Service.questions && Service.questions.keys) {
             this.props.history.push(`/question/${Service.questions.keys[0]}`);
-        } else {
-            setTimeout(() => {
-                this.gotoQuestion();
-            }, 500);
-        }
+        // } else {
+        //     setTimeout(() => {
+        //         this.gotoQuestion();
+        //     }, 500);
+        // }
     }
 }
 
