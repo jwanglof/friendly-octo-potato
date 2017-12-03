@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import firebase from './firebase';
 import Service from './Service';
 import Events from './Events';
+import {Link} from "react-router-dom";
 const random_name = require('node-random-name');
 
 class Finished extends Component {
@@ -20,8 +21,6 @@ class Finished extends Component {
         this.changeRandomName = this.changeRandomName.bind(this);
         this.changeName = this.changeName.bind(this);
         this.submitName = this.submitName.bind(this);
-
-
     }
 
     componentDidMount() {
@@ -51,9 +50,17 @@ class Finished extends Component {
                         <br/>
                         Om du vill göra om spelet med en ny användare så är det bara att ta bort kakan som heter "alumni-game-cookie" och ladda om sidan :)
                         <br/>
+                    </span>
+                    {
+                        !this.state.submitNameButtonEnabled ?
+                            <span className="d-block mt-2 mb-2">
+                                <Link className="nav-link" to="/leaderboard">Tryck här för att komma till leaderboarden</Link>
+                            </span> : null
+                    }
+                    <span className="d-block">
                         <form onSubmit={this.submitName}>
                             <div className="form-group">
-                                <input type="text" className="form-control" placeholder="'Namn'" value={this.state.name} onChange={this.changeName}/>
+                                <input type="text" className="form-control" placeholder="'Namn'" value={this.state.name} onChange={this.changeName} disabled={!this.state.submitNameButtonEnabled}/>
                             </div>
                             <div className="btn-toolbar">
                                 <div className="btn-group">

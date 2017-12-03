@@ -27,6 +27,10 @@ class AddQuestion extends Component {
                             <label htmlFor="category">Kategori</label>
                             <input type="text" className="form-control" id="category" name="category" placeholder="Kategori" value={this.state.category} onChange={this.handleInputChange}/>
                         </div>
+                        <div className="form-group">
+                            <label htmlFor="level">Level</label>
+                            <input type="number" className="form-control" id="level" name="level" placeholder="Level (0, 1, 2)" value={this.state.level} min="0" max="2" onChange={this.handleInputChange}/>
+                        </div>
 
                         <h3>Svar</h3>
 
@@ -97,6 +101,7 @@ class AddQuestion extends Component {
         const target = event.target;
         const name = target.name;
         const value = target.value;
+
         this.setState({
             [name]: value
         });
@@ -138,6 +143,7 @@ class AddQuestion extends Component {
         return {
             question: '',
             category: '',
+            level: 0,
             answerOne: '',
             answerOneChecked: false,
             answerCross: '',

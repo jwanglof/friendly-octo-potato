@@ -24,23 +24,34 @@ class Leaderboard extends Component {
         this.firebasePlayersDb.once('value')
             .then(playersSnapshot => {
                 this.players = playersSnapshot.val();
-                return this.firebaseQuestionsDb.once('value');
+                console.log(1, this.players);
+                if (this.players && Object.keys(this.players).length > 0) {
+                    return this.firebaseQuestionsDb.once('value');
+                } else {
+                    throw new Error('No players... :(');
+                }
             })
             .then(questionsSnapshot => {
                 this.questions = questionsSnapshot.val();
+                console.log(1, this.questions);
                 return this.firebaseAnswersDb.once('value');
             })
             .then(answersSnapshot => {
                 this.answers = answersSnapshot.val();
+                console.log(1, this.answers);
 
                 for (let pKey of Object.keys(this.players)) {
+                    console.log(pKey);
                     const player = this.players[pKey];
+                    console.log(player);
                     player.correctAnswers = 0;
-                    for (let aKey of player.answers) {
-                        const question = this.questions[aKey.questionId];
-                        const answer = this.answers[aKey.questionId];
-                        if (question && answer && aKey.chosenAnswer === answer.correctAnswer) {
-                            player.correctAnswers++;
+                    if (player.answers) {
+                        for (let aKey of player.answers) {
+                            const question = this.questions[aKey.questionId];
+                            const answer = this.answers[aKey.questionId];
+                            if (question && answer && aKey.chosenAnswer === answer.correctAnswer) {
+                                player.correctAnswers++;
+                            }
                         }
                     }
                 }
@@ -48,6 +59,7 @@ class Leaderboard extends Component {
             })
             .then(sortedPlayers => {
                 const sortedPlayerList = [];
+                console.log(1, sortedPlayerList);
                 for (let p of sortedPlayers) {
                     sortedPlayerList.push(this.players[p]);
                 }

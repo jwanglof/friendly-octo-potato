@@ -45,6 +45,8 @@ class Question extends Component {
                 this.userAnswers = data.answers;
             }
         });
+
+        window.scrollTo(0, 0);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -162,6 +164,7 @@ class Question extends Component {
     submitAnswer(overrideAnswer) {
         const playerRef = this.firebasePlayersDb.child(`${Service.getUuid()}`);
         const questionRef = this.firebaseQuestionsDb.child(this.props.match.params.questionId);
+        const answerOnSecond = this.state.gameTimerSeconds;
 
         questionRef.once('value', snapshot => {
             console.log(555, snapshot.val());
@@ -180,8 +183,11 @@ class Question extends Component {
                 if (!error) {
                     this.userAnswers.push({
                         questionId: this.props.match.params.questionId,
-                        chosenAnswer: overrideAnswer || this.state.chosenAnswer
+                        chosenAnswer: overrideAnswer || this.state.chosenAnswer,
+                        questionOriginalSeconds: this.originalGameTime,
+                        answerOnSecond
                     });
+                    console.log(324, this.userAnswers);
 
                     return playerRef.update({answers: this.userAnswers});
                 }
@@ -200,6 +206,8 @@ class Question extends Component {
                         console.log('User done!');
                         this.props.history.push(`/finished`);
                     }
+                } else {
+                    console.error('Uh oh..', error);
                 }
             });
         });
@@ -216,6 +224,9 @@ class Question extends Component {
                 break;
             case 2:
                 gameTimerSeconds = Math.floor(Math.random() * 4) + 5;
+                break;
+            default:
+                gameTimerSeconds = 100;
                 break;
         }
         this.originalGameTime = gameTimerSeconds;

@@ -28,7 +28,7 @@ class Jumbotron extends Component {
                 <h2>
                     Välkommen, {this.state.name}
                 </h2>
-                <h4>Du skapades: <Timestamp time={this.props.playerCreated}/></h4>
+                <h4>Du skapades: <Timestamp time={this.props.playerCreated / 1000}/></h4>
             </div>
         );
     }

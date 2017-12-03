@@ -56,11 +56,13 @@ class App extends Component {
             this.firebasePlayersDb.child(this.currentUuid).once('value', val => {
                 this.firebasePlayerData = val.val();
                 // this.state.playerCreated = this.firebasePlayerData.created;
-                this.setState({
-                    playerCreated: this.firebasePlayerData.created / 1000,
-                    playerName: this.firebasePlayerData.name || ''
-                });
-                Events.emitter.emit(Events.constants.nameChanged, this.firebasePlayerData.name || 'Lozl');
+                if (this.firebasePlayerData) {
+                    this.setState({
+                        playerCreated: this.firebasePlayerData.created,
+                        playerName: this.firebasePlayerData.name || ''
+                    });
+                    Events.emitter.emit(Events.constants.nameChanged, this.firebasePlayerData.name || 'Lozl');
+                }
             });
         }
 
