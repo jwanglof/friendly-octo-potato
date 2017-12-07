@@ -18,5 +18,6 @@ module.exports = {
     setUuid,
     getUuid,
     questions,
-    allQuestions: {}
+    allQuestions: {},
+    questionNumber: 1
 };

@@ -51,9 +51,9 @@ class Intro extends Component {
                         Nuförtiden hänger jag i Karlstad och är konsult på ÅF. Sitter som frontendansvarig för Hertz Norden (biluthyrning). Flyttade hit under andra halvan av 2016 för att min dåvarande fästmö (nu fru) kom in på Karlstads Universitet.
                     </span>
                     <span className="d-block">
-                        Jag fick förfrågan att göra något roligt till D-Sektionens julkalender så kom upp med detta lilla spel. Om jag ska vara ärlig så har jag gjort detta spel främst för att lära mig mer ReactJS integrerat med Firebase Real-tids DB ;)
+                        Jag fick förfrågan att göra något roligt till D-Sektionens julkalender så kom upp med detta lilla spel. Om jag ska vara ärlig så har jag gjort detta spel främst för att lära mig mer ReactJS integrerat med Firebase realtids DB ;)
                         <br/>
-                        Spelet går ut på att svara på frågor helt enkelt. Frågorna är programmeringsrelaterade, såklart, och du kommer ha mindre och mindre tid på dig att svara per fråga. På de fem första frågorna har du mellan 15-25 sekunder (är lite randomiserat, såklart!), på fråga fem t.o.m tio har du 10-15 sekunder och på de sista 5 har du mellan 5-7 sekunder per fråga.
+                        Spelet går ut på att svara på frågor helt enkelt. Frågorna är jävligt random och du kommer ha mindre och mindre tid på dig att svara per fråga. På de fem första frågorna har du mellan 15-20 sekunder (är lite randomiserat, såklart!), på fråga fem t.o.m tio har du 10-15 sekunder och på de sista 5 har du mellan 5-7 sekunder per fråga.
                         <br/>
                         Om du inte hinner svara på frågan innan tidsspannet är slut skickas du vidare till nästa fråga.
                         <br/>

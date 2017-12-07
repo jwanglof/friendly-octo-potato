@@ -68,7 +68,7 @@ class Question extends Component {
                 <div className="row">
                     <div className="col-12 text-left">
                         <h5>Sekunder kvar: <span className={this.timerClass}>{this.state.gameTimerSeconds}</span></h5>
-                        <h3>Fråga: {this.state.question.question} (#Frågenummer)</h3>
+                        <h3>Fråga: {this.state.question.question} (level: {this.state.question.level})</h3>
                         <h5>Kategori: {this.state.question.category}</h5>
                         <div className="form-check">
                             <label className="form-check-label">

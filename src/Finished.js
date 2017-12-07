@@ -43,10 +43,13 @@ class Finished extends Component {
                         Hoppas att spelet fungerade hyffsat bra iaf, jag gjorde detta under några kvällar för att jag fick en fråga från Fluff om jag ville vara med i en lucka i julkalendern (hur kan man säga nej till det, och till the Dude?). Har lärt mig lite mer React under tiden vilket varit roligt.
                     </span>
                     <span className="d-block">
-                        Som du kanske märker är du inne på https://alumni.botillsammans.nu och du kanske fick några frågor om oss också, men tänkte ändå skriva lite reklam här om oss: Bla bla bla bla bla
+                        Som du kanske märker är du inne på https://alumni.botillsammans.nu och du kanske fick några frågor om oss också, men tänkte ändå skriva lite reklam här om oss: Vi är en gratistjänst för att hjälpa människor bo mer tillsammans vilket vi tror är oslagbart på många plan! Nu har vi över 5000 registrerade användare tillsammans med några 1000-tal annonser av olika slag :)
                     </span>
                     <span className="d-block">
-                        Du kan trycka här för att komma till ett sorts leaderboard, och du får jätte-jätte-jättegärna fylla i ditt "namn" i detta formulär för att kunna visa hur bäst du egentligen är mot de andra som lekt i detta spel (om du inte gör det så kommer din användare heta "<i>{this.state.name}</i>").
+                         <a href="https://www.botillsammans.nu/about" target="_blank" rel="noopener noreferrer">Om du vill läsa lite mer om oss kan du klicka här</a>
+                    </span>
+                    <span className="d-block">
+                        Du får jätte-jätte-jättegärna fylla i ditt "namn" i detta formulär för att kunna visa hur bäst du egentligen är mot de andra som lekt i detta spel (om du inte gör det så kommer din användare heta "<i>{this.state.name}</i>"). <strong>(PS. Eftersom jag blev lat när jag kom hit så är detta den enda chans du har att ändra ditt namn)</strong>
                         <br/>
                         Om du vill göra om spelet med en ny användare så är det bara att ta bort kakan som heter "alumni-game-cookie" och ladda om sidan :)
                         <br/>

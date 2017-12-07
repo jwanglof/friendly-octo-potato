@@ -20,7 +20,7 @@ class App extends Component {
     firebasePlayersDb = firebase.database().ref('players');
     firebaseQuestionsDb = firebase.database().ref('questions');
     firebasePlayerData;
-    maximumQuestions = 6;
+    maximumQuestions = 15;
 
     constructor(props) {
         super(props);
@@ -134,6 +134,7 @@ class App extends Component {
                     // Add all keys to a temp-array so we can search it
                     chosenQuestionKeys.push(randomKey);
                     chosenQuestions[randomKey] = data[randomKey];
+                    console.log(randomKey, data[randomKey], data[randomKey].level);
                 } else {
                     // If we already have the question we need to make the length longer so we can fetch a new question!
                     len++;
